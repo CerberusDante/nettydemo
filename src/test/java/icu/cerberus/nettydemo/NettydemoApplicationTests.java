@@ -10,7 +10,7 @@ class NettydemoApplicationTests {
 
     @Test
     void contextLoads() throws Exception {
-        int port = 8000;
+        int port = 8001;
         new EchoServer(port).run();
     }
 

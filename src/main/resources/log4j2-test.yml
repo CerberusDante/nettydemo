@@ -1,0 +1,214 @@
+Configuration:
+  Status: WARN
+  name: YMLConfigTest
+  properties:
+    property:
+      - name: log.path
+        value: logs/log4j2
+      - name: log.pattern
+        value: "[%d{yyyy-MM-dd HH:mm:ss.SSS}][%-5p][%T][%c.%M:%L] %n    %msg%xEx%n"
+      - name: max.single.file.size
+        value: 10MB
+      - name: project.name
+        value: NettyDemo
+  Appenders:
+    Console:
+      name: Console
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: ${log.pattern}
+      ThresholdFilter:
+        level: DEBUG
+        onMatch: ACCEPT
+        onMismatch: DENY
+
+    RollingFile:
+      - name: DebugLogRollingFile
+        fileName: ${log.path}/${project.name}_debug.log
+        filePattern: "${log.path}/$${date:yyyy_MM_dd}/${project.name}_debug_%d{yyyy_MM_dd_HH}_%i.log.gz"
+        PatternLayout:
+          pattern: ${log.pattern}
+        Filters:
+          ThresholdFilter:
+            level: DEBUG
+            onMatch: ACCEPT
+            onMismatch: DENY
+        Policies:
+          TimeBasedTriggeringPolicy:
+            interval: 1
+            modulate: false
+        DefaultRolloverStrategy:
+          fileIndex: nomax
+          Delete:
+            basePath: ${log.path}
+            maxDepth: 2
+            IfFileName:
+              glob: "*/${project.name}_debug_*.log.gz"
+              IfLastModified:
+                age: 30d
+                IfAny:
+                  IfAccumulatedFileSize:
+                    exceeds: 50MB
+                  IfAccumulatedFileCount:
+                    exceeds: 2
+
+      - name: InfoLogRollingFile
+        fileName: ${log.path}/${project.name}_info.log
+        filePattern: "${log.path}/$${date:yyyy_MM_dd}/${project.name}_info_%d{yyyy_MM_dd_HH}_%i.log.gz"
+        PatternLayout:
+          pattern: ${log.pattern}
+        Filters:
+          ThresholdFilter:
+            level: INFO
+            onMatch: ACCEPT
+            onMismatch: DENY
+        Policies:
+          TimeBasedTriggeringPolicy:
+            interval: 1
+            modulate: false
+          SizeBasedTriggeringPolicy:
+            size: ${max.single.file.size}
+        DefaultRolloverStrategy:
+          fileIndex: nomax
+          Delete:
+            basePath: ${log.path}
+            maxDepth: 2
+            IfFileName:
+              glob: "*/${project.name}_info_*.log.gz"
+              IfLastModified:
+                age: 30d
+                IfAny:
+                  IfAccumulatedFileSize:
+                    exceeds: 3GB
+                  IfAccumulatedFileCount:
+                    exceeds: 2
+                    
+      - name: WarnLogRollingFile
+        fileName: ${log.path}/${project.name}_warn.log
+        filePattern: "${log.path}/$${date:yyyy_MM_dd}/${project.name}_warn_%d{yyyy_MM_dd_HH}_%i.log.gz"
+        PatternLayout:
+          pattern: ${log.pattern}
+        Filters:
+          ThresholdFilter:
+            level: INFO
+            onMatch: ACCEPT
+            onMismatch: DENY
+        Policies:
+          TimeBasedTriggeringPolicy:
+            interval: 1
+            modulate: false
+          SizeBasedTriggeringPolicy:
+            size: ${max.single.file.size}
+        DefaultRolloverStrategy:
+          fileIndex: nomax
+          Delete:
+            basePath: ${log.path}
+            maxDepth: 2
+            IfFileName:
+              glob: "*/${project.name}_warn_*.log.gz"
+              IfLastModified:
+                age: 30d
+                IfAny:
+                  IfAccumulatedFileSize:
+                    exceeds: 3GB
+                  IfAccumulatedFileCount:
+                    exceeds: 3000
+
+      - name: ErrorLogRollingFile
+        fileName: ${log.path}/${project.name}_error.log
+        filePattern: "${log.path}/$${date:yyyy_MM_dd}/${project.name}_error_%d{yyyy_MM_dd_HH}_%i.log.gz"
+        PatternLayout:
+          pattern: ${log.pattern}
+        Filters:
+          ThresholdFilter:
+            level: INFO
+            onMatch: ACCEPT
+            onMismatch: DENY
+        Policies:
+          TimeBasedTriggeringPolicy:
+            interval: 1
+            modulate: false
+          SizeBasedTriggeringPolicy:
+            size: ${max.single.file.size}
+        DefaultRolloverStrategy:
+          fileIndex: nomax
+          Delete:
+            basePath: ${log.path}
+            maxDepth: 2
+            IfFileName:
+              glob: "*/${project.name}_error_*.log.gz"
+              IfLastModified:
+                age: 30d
+                IfAny:
+                  IfAccumulatedFileSize:
+                    exceeds: 3GB
+                  IfAccumulatedFileCount:
+                    exceeds: 3000
+
+      - name: DruidSqlRollingFile
+        fileName: ${log.path}/druid.log
+        filePattern: "${log.path}/$${date:yyyy_MM_dd}/druid_%d{yyyy_MM_dd_HH}_%i.log.gz"
+        PatternLayout:
+          pattern: ${log.pattern}
+        Filters:
+          ThresholdFilter:
+            level: INFO
+            onMatch: ACCEPT
+            onMismatch: DENY
+        Policies:
+          TimeBasedTriggeringPolicy:
+            interval: 1
+            modulate: false
+          SizeBasedTriggeringPolicy:
+            size: ${max.single.file.size}
+        DefaultRolloverStrategy:
+          fileIndex: nomax
+          Delete:
+            basePath: ${log.path}
+            maxDepth: 2
+            testMode: true
+            IfFileName:
+              glob: "*/druid_*.log.gz"
+              IfLastModified:
+                age: 30d
+                IfAny:
+                  IfAccumulatedFileSize:
+                    exceeds: 3GB
+                  IfAccumulatedFileCount:
+                    exceeds: 3000
+  Loggers:
+    Root:
+      level: "ALL"
+      AppenderRef:
+        - ref: Console
+        - ref: InfoLogRollingFile
+        - ref: WarnLogRollingFile
+        - ref: DebugLogRollingFile
+    AsyncLogger:
+      - name: AsyncErrorLogRollingFile
+        level: ERROR
+        additivity: true
+        AppenderRef:
+          ref: ErrorLogRollingFile
+      - name: AsyncDruidSqlRollingFile
+        level: ERROR
+        additivity: true
+        AppenderRef:
+          ref: DruidSqlRollingFile
+
+    Logger:
+      - name: druid.sql.Statement
+        level: DEBUG
+        additivity: false
+        appender-ref:
+          ref: DruidSqlRollingFile
+      - name: io.netty
+        level: INFO
+      - name: org.redisson
+        level: INFO
+      - name: org.apache.catalina.startup.DigesterFactory
+        level: ERROR
+      - name: org.apache.catalina.util.LifecycleBase
+        level: ERROR
+      - name: org.springframework.boot.actuate.autoconfigure.CrshAutoConfiguration
+        level: WARN

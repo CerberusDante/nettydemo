@@ -5,12 +5,12 @@ import icu.cerberus.nettydemo.echo.EchoServer;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-//@SpringBootTest
+@SpringBootTest
 class NettydemoApplicationTests {
 
     @Test
     void contextLoads() throws Exception {
-        int port = 8000;
+        int port = 8001;
         new EchoServer(port).run();
     }
 

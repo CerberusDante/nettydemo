@@ -7,20 +7,31 @@ Configuration:
         value: logs/log4j2
       - name: log.pattern
         value: "[%d{yyyy-MM-dd HH:mm:ss.SSS}][%-5p][%T][%c.%M:%L] %n    %msg%xEx%n"
+      - name: log.pattern.justPrint
+        value: "%msg%n"
       - name: max.single.file.size
         value: 10MB
       - name: project.name
         value: NettyDemo
   Appenders:
     Console:
-      name: Console
-      target: SYSTEM_OUT
-      PatternLayout:
-        pattern: ${log.pattern}
-      ThresholdFilter:
-        level: DEBUG
-        onMatch: ACCEPT
-        onMismatch: DENY
+      - name: Console
+        target: SYSTEM_OUT
+        PatternLayout:
+          pattern: ${log.pattern}
+        ThresholdFilter:
+          level: INFO
+          onMatch: ACCEPT
+          onMismatch: DENY
+
+      - name: Print
+        target: SYSTEM_OUT
+        PatternLayout:
+          pattern: ${log.pattern.justPrint}
+        ThresholdFilter:
+          level: DEBUG
+          onMatch: ACCEPT
+          onMismatch: DENY
 
     RollingFile:
       - name: DebugLogRollingFile
@@ -180,10 +191,10 @@ Configuration:
     Root:
       level: "ALL"
       AppenderRef:
-        - ref: Console
         - ref: InfoLogRollingFile
         - ref: WarnLogRollingFile
         - ref: DebugLogRollingFile
+        - ref: Console
     AsyncLogger:
       - name: AsyncErrorLogRollingFile
         level: ERROR
@@ -212,3 +223,7 @@ Configuration:
         level: ERROR
       - name: org.springframework.boot.actuate.autoconfigure.CrshAutoConfiguration
         level: WARN
+      - name: icu.cerberus.nettydemo.nio
+        level: DEBUG
+        appender-ref:
+          ref: Print

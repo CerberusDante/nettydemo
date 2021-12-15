@@ -39,3 +39,4 @@ mvnw.cmd
 ### logs ###
 *.log
 logs/
+/test.txt

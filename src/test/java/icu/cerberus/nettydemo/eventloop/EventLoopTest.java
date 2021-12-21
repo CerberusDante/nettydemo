@@ -57,6 +57,5 @@ public class EventLoopTest {
             e.printStackTrace();
         }
         System.out.println();
-        System.out.println();
     }
 }

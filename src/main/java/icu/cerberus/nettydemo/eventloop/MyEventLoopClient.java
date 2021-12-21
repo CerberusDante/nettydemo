@@ -33,7 +33,7 @@ public class MyEventLoopClient {
                     }
                 })
                 // 异步非阻塞调用connect，使用NioEventLoopGroup的线程连接。
-                .connect(new InetSocketAddress("localhost", 19090));
+                .connect(new InetSocketAddress("localhost", 25564));
         // connect异步非阻塞的处理方法1, 使用sync同步处理
         /*try {
             // 若不调用，主线程不阻塞，往下运行，此时还未建立channel。
